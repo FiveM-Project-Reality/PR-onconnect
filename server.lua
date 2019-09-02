@@ -2,9 +2,9 @@
 
 
 
-	ADD:
-		Keep track of bans, and prevent people from joining if they were banned.
-		Make temp bans.
+    ADD:
+	Keep track of bans, and prevent people from joining if they were banned.
+	Make temp bans.
 --]]
 
 local function OnPlayerConnecting(name, setReason, deferrals)
