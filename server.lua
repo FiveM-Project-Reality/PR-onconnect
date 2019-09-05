@@ -1,3 +1,7 @@
+--[[BUGS:
+				If players table is empty, PlayerCheck() will return an error talking about trying to reach a nil value
+]]
+
 local function OnPlayerConnecting(name, setReason, deferrals)
 	local banTime = ""
 	local banReason = ""
@@ -27,7 +31,6 @@ local function OnPlayerConnecting(name, setReason, deferrals)
 	end
 end
 
-
 function SteamCheck(identifiers, steamIdentifier)
 	for _,v in pairs(identifiers)do
 		if string.match(v, "steam") then
@@ -35,9 +38,9 @@ function SteamCheck(identifiers, steamIdentifier)
 			break
 		end
 	end
+	print(name .. " : " .. steamIdentifier)
 	return steamIdentifier
 end
-
 
 function BanCheck(steamIdentifier, banReason, banAdmin, banTime)
 	local count = 0
@@ -57,7 +60,6 @@ function BanCheck(steamIdentifier, banReason, banAdmin, banTime)
 	return false
 end
 
-
 function PlayerCheck(name, steamIdentifier)
 	local count = 0
 	local found = false
@@ -68,6 +70,9 @@ function PlayerCheck(name, steamIdentifier)
 
 		if searchPlayers[count].SteamID == steamIdentifier then
 			found = true
+			if searchPlayers[count].SteamName ~= name then
+				MySQL.Sync.fetchAll("UPDATE players SET SteamName = @name WHERE SteamID = @steamid", {["@name"] = name, ["@steamid"] = steamIdentifier})
+			end
 			break
 		end
 	end
@@ -87,6 +92,5 @@ function PlayerCheck(name, steamIdentifier)
 		end
 	end
 end
-
 
 AddEventHandler("playerConnecting", OnPlayerConnecting)
